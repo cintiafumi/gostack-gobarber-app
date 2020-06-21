@@ -166,6 +166,28 @@ Toda vez que mexemos em código nativo (pod install), temos que executar de novo
 yarn ios
 ```
 
+Em `src/pages/SignIn/index.tsx`
+```tsx
+import React from 'react';
+
+import { Container } from './styles';
+
+const SignIn: React.FC = () => {
+  return <Container />;
+};
+
+export default SignIn;
+```
+
+Em `src/pages/SignIn/styles.ts`
+```ts
+import styled from 'styled-components/native';
+
+export const Container = styled.View``;
+```
+
+Em SignUp, fazemos o mesmo.
+
 Vamos instalar também conforme [doc](https://reactnavigation.org/docs/hello-react-navigation)
 ```bash
 yarn add @react-navigation/stack
@@ -216,4 +238,32 @@ const App: React.FC = () => (
 );
 
 export default App;
+```
+
+## Densidade de pixel
+Quando exportamos uma imagem do Figma para usar no app mobile, temos que exportar 1x, 2x e 3x, pois cada dispositivo tem uma densidade diferente de pixel na tela. Vamos colocar as imagens em `src/assets`
+
+Para corrigir a importação do png, vamos criar um arquivo `src/@types/index.d.ts`
+```ts
+declare module '*.png';
+```
+
+Em `src/pages/SignIn/index.tsx`
+```tsx
+import React from 'react';
+import { Image } from 'react-native';
+
+import { Container } from './styles';
+
+import logoImg from '../../assets/logo.png';
+
+const SignIn: React.FC = () => {
+  return (
+    <Container>
+      <Image source={logoImg} />
+    </Container>
+  );
+};
+
+export default SignIn;
 ```
