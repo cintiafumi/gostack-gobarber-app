@@ -267,3 +267,52 @@ const SignIn: React.FC = () => {
 
 export default SignIn;
 ```
+
+## Importando fontes externas
+Procurar a fonte no google fonts e baixar. Criamos a pasta na raiz do projeto `assets/fonts` e colocamos as fontes dentro dessa pasta. Detalhe para android é que o nome da fonte será exatamente o nome do arquivo. No caso do ios, existe um nome escondido, então vamos instalar essas fontes no sistema e procuramos no macbook por font book. Procuramos por roboto slab e ao clicar no ícone de info, vemos que o nome que procuramos é `PostScript name`. A sugestão é que o nome do arquivo da fonte seja o mesmo que desse `PostScript name` para funcionar para ambos dispositivos.
+
+Criamos agora um arquivo na raiz do projeto chamado `react-native.config.js`
+```js
+module.exports = {
+  project: {
+    ios: {},
+    android: {},
+  },
+  assets: [
+    './assets/fonts'
+  ]
+}
+```
+
+E no terminal rodamos
+```bash
+yarn react-native link
+```
+E vemos que as fontes foram inseridas em `android/app/src/main/assets/fonts` e em `ios/appgobarber/Info.plist`. Como rodamos algo nativo, precisamos rodar novamente `yarn ios` ou `yarn android`.
+
+Para usarmos as fontes, vamos criar um componente em SignIn
+```tsx
+import { Container, Title } from './styles';
+//...
+      <Title>Faça seu logon</Title>
+```
+
+E em `src/pages/SignIn/styles.ts`
+```ts
+import styled from 'styled-components/native';
+
+export const Container = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const Title = styled.Text`
+  font-size: 24px;
+  color: #f4ede8;
+  font-family: 'RobotoSlab-Medium';
+  margin: 64px 0 24px;
+`;
+```
+
+Uma coisa que não funciona é o encadeamento tipo Sass.
