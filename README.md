@@ -129,9 +129,90 @@ import { View, StatusBar } from 'react-native';
 
 const App: React.FC = () => (
   <>
-    <StatusBar barStyle="light-content" backgroundColor="#312e28" />
-    <View style={{ flex: 1, backgroundColor: '#312e28' }} />
+    <StatusBar barStyle="light-content" backgroundColor="#312e38" />
+    <View style={{ flex: 1, backgroundColor: '#312e38' }} />
   </>
+);
+
+export default App;
+```
+
+## Configurando navegação
+Vamos criar as páginas de SignIn e SignUp.
+
+Importar o styled-components
+```bash
+yarn add styled-components
+yarn add -D @types/styled-components
+```
+
+Criamos o arquivo de rotas e instalamos o pacote conforme [doc](https://reactnavigation.org/docs/getting-started)
+```bash
+yarn add @react-navigation/native
+
+yarn add react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view
+
+cd ios && pod install && cd ..
+```
+Para o android não precisamos instalar nada.
+
+Ir para o `App.tsx` e importar acima de tudo
+```tsx
+import 'react-native-gesture-handler';
+```
+
+Toda vez que mexemos em código nativo (pod install), temos que executar de novo
+```bash
+yarn ios
+```
+
+Vamos instalar também conforme [doc](https://reactnavigation.org/docs/hello-react-navigation)
+```bash
+yarn add @react-navigation/stack
+```
+
+Para cada navegação, vamos criando uma navegação diferente. Em `src/routes/index.tsx`
+```tsx
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+
+import SignIn from '../pages/SignIn';
+import SignUp from '../pages/SignUp';
+
+const Auth = createStackNavigator();
+
+const AuthRoutes: React.FC = () => (
+  <Auth.Navigator
+    screenOptions={{
+      headerShown: false,
+      cardStyle: { backgroundColor: '#312e38' },
+    }}
+  >
+    <Auth.Screen name="SignIn" component={SignIn} />
+    <Auth.Screen name="SignUp" component={SignUp} />
+  </Auth.Navigator>
+);
+
+export default AuthRoutes;
+```
+
+Por volta da minha aplicação inteira preciso ter o `NavigationContainer`
+```tsx
+import 'react-native-gesture-handler';
+
+import React from 'react';
+import { View, StatusBar } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+
+import Routes from './routes';
+
+const App: React.FC = () => (
+  <NavigationContainer>
+    <StatusBar barStyle="light-content" backgroundColor="#312e38" />
+    <View style={{ flex: 1, backgroundColor: '#312e38' }}>
+      <Routes />
+    </View>
+  </NavigationContainer>
 );
 
 export default App;
