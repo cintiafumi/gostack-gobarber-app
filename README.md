@@ -122,3 +122,17 @@ Deletamos o eslintrc.json criado e copiamos os arquivos .editorconfig, .eslintig
 E recarregamos o vscode para carregar o eslint.
 
 ## Configurando StatusBar
+Importar StatusBar em App.tsx
+```tsx
+import React from 'react';
+import { View, StatusBar } from 'react-native';
+
+const App: React.FC = () => (
+  <>
+    <StatusBar barStyle="light-content" backgroundColor="#312e28" />
+    <View style={{ flex: 1, backgroundColor: '#312e28' }} />
+  </>
+);
+
+export default App;
+```
