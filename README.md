@@ -338,3 +338,143 @@ project.ext.vectoricons = [
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 ```
+
+E adicionamos a tipagem do pacote
+```bash
+yarn add -D @types/react-native-vector-icons
+```
+
+Importamos o componente `FeatherIcon` que terá todos os icons a partir dele.
+
+Em `src/components/Input/index.tsx`
+```tsx
+import React from 'react';
+import { TextInputProps } from 'react-native';
+
+import { Container, TextInput, Icon } from './styles';
+
+interface InputProps extends TextInputProps {
+  name: string;
+  icon: string;
+}
+
+const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => (
+  <Container>
+    <Icon name={icon} size={20} color="#666360" />
+
+    <TextInput
+      keyboardAppearance="dark"
+      placeholderTextColor="#666360"
+      {...rest}
+    />
+  </Container>
+);
+
+export default Input;
+```
+
+Em `src/components/Input/styles.ts`
+```ts
+import styled from 'styled-components/native';
+import FeatherIcon from 'react-native-vector-icons/Feather';
+
+export const Container = styled.View`
+  width: 100%;
+  height: 60px;
+  padding: 0 16px;
+  background: #232129;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const TextInput = styled.TextInput`
+  flex: 1;
+  color: #fff;
+  font-size: 16px;
+  font-family: 'RobotoSlab-Regular';
+`;
+
+export const Icon = styled(FeatherIcon)`
+  margin-right: 16px;
+`;
+```
+
+Em `src/components/Button/styles.ts`
+```ts
+import styled from 'styled-components/native';
+import { RectButton } from 'react-native-gesture-handler';
+
+export const Container = styled(RectButton)`
+  width: 100%;
+  height: 50px;
+  background: #ff9000;
+  border-radius: 10px;
+  margin-top: 8px;
+
+  justify-content: center;
+  align-items: center;
+`;
+
+export const ButtonText = styled.Text`
+  font-family: 'RobotoSlab-Medium';
+  color: #312e38;
+  font-size: 18px;
+`;
+```
+
+Em `src/components/Button/index.tsx`
+```tsx
+import React from 'react';
+import { RectButtonProperties } from 'react-native-gesture-handler';
+import { Container, ButtonText } from './styles';
+
+interface ButtonProps extends RectButtonProperties {
+  children: string;
+}
+
+const Button: React.FC<ButtonProps> = ({ children, ...rest }) => (
+  <Container {...rest}>
+    <ButtonText>{children}</ButtonText>
+  </Container>
+);
+
+export default Button;
+```
+
+Em `src/components/Button/styles.ts`
+```ts
+import styled from 'styled-components/native';
+import { RectButton } from 'react-native-gesture-handler';
+
+export const Container = styled(RectButton)`
+  width: 100%;
+  height: 50px;
+  background: #ff9000;
+  border-radius: 10px;
+  margin-top: 8px;
+
+  justify-content: center;
+  align-items: center;
+`;
+
+export const ButtonText = styled.Text`
+  font-family: 'RobotoSlab-Medium';
+  color: #312e38;
+  font-size: 18px;
+`;
+```
+
+Em `src/pages/SignIn/index.tsx`
+```tsx
+      <Input name="email" icon="mail" placeholder="E-mail" />
+
+      <Input name="password" icon="lock" placeholder="Senha" />
+
+      <Button
+        onPress={() => {
+          console.log('Deu');
+        }}
+      >
+```
