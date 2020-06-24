@@ -316,3 +316,25 @@ export const Title = styled.Text`
 ```
 
 Uma coisa que não funciona é o encadeamento tipo Sass.
+
+# Autenticação e cadastro
+## Input & Button
+Criar a pasta `components` com Input e Button. Importar os componentes no SignIn.
+
+Em Button, recebemos `children` que será um `<Text>`. Para a estilização de Button, usamos `RectButton` da biblioteca `react-native-gesture-handler` que tem o efeito de click para ambas plataformas e sua `RectButtonProperties` para `Props` deixando `children` obrigatório e sendo `string`.
+
+Em Input, usamos o `TextInput` do próprio `react-native` para o styled e o `TextInputProps` para passar suas Props. No input, vamos deixar `name` e `icon` com propriedades obrigatórias. E adicionamos essas informações em `SignIn`. Pegamos todas as props e repassamos para o componente `TextInput`. A propriedade `keyboardAppearance` somente funciona para iOS e deixa a cor do teclado escura.
+
+Para os ícones, instalamos o pacote `react-native-vector-icons` e damos novamente `pod install` dentro da pasta ios. E em `ios/appgobarber/Info.plist` e adicionamos
+```
+		<string>Feather.ttf</string>
+```
+
+Dentro do arquivo `android/app/build.gradle` e adicionar no final
+```
+project.ext.vectoricons = [
+  iconFontNames: ['Feather.ttf']
+];
+
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+```
