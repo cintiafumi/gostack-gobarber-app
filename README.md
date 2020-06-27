@@ -670,3 +670,15 @@ export const BackToSignInText = styled.Text`
 `;
 ```
 
+E para linkar as telas, utilizamos o `useNavigation` em SignUp
+```tsx
+import { useNavigation } from '@react-navigation/native';
+
+            <BackToSignIn onPress={() => navigation.goBack()}>
+```
+
+E em SignIn
+```tsx
+      <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
+```
+
