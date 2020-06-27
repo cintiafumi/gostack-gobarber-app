@@ -561,3 +561,112 @@ const SignIn: React.FC = () => {
 ```
 Onde o `KeyboardAvoidingView` vai empurrar o conteúdo para cima, o `ScrollView` vai permitir o scroll da tela e também vai fazer o teclado fechar quando tocar na tela fora do input.
 
+## Tela de cadastro
+Copia tudo do SignIn para o SignUp
+```tsx
+import React from 'react';
+import {
+  Image,
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+
+import Input from '../../components/Input';
+import Button from '../../components/Button';
+
+import logoImg from '../../assets/logo.png';
+
+import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
+
+const SignUp: React.FC = () => {
+  return (
+    <>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={{ flex: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Container>
+            <Image source={logoImg} />
+
+            <View>
+              <Title>Crie sua conta</Title>
+            </View>
+
+            <Input name="name" icon="user" placeholder="Nome" />
+
+            <Input name="email" icon="mail" placeholder="E-mail" />
+
+            <Input name="password" icon="lock" placeholder="Senha" />
+
+            <Button
+              onPress={() => {
+                console.log('Deu');
+              }}
+            >
+              Entrar
+            </Button>
+
+            <BackToSignIn onPress={() => {}}>
+              <Icon name="arrow-left" size={20} color="#fff" />
+              <BackToSignInText>Voltar para logon</BackToSignInText>
+            </BackToSignIn>
+          </Container>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
+  );
+};
+
+export default SignUp;
+```
+
+Com estilo
+```ts
+import styled from 'styled-components/native';
+import { getBottomSpace } from 'react-native-iphone-x-helper';
+import { Platform } from 'react-native';
+
+export const Container = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 0 30px ${Platform.OS === 'android' ? 150 : 100}px;
+`;
+
+export const Title = styled.Text`
+  font-size: 24px;
+  color: #f4ede8;
+  font-family: 'RobotoSlab-Medium';
+  margin: 64px 0 24px;
+`;
+
+export const BackToSignIn = styled.TouchableOpacity`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #312e38;
+  border-top-width: 1px;
+  border-color: #232129;
+  padding: 16px 0 ${16 + getBottomSpace()}px;
+
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+
+export const BackToSignInText = styled.Text`
+  color: #fff;
+  font-size: 18px;
+  font-family: 'RobotoSlab-Regular';
+  margin-left: 16px;
+`;
+```
+
