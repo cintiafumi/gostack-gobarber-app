@@ -478,3 +478,86 @@ Em `src/pages/SignIn/index.tsx`
         }}
       >
 ```
+
+## Tela de autenticação
+Vamos adicionar os links para "Esqueci minha senha" na tela de `SignIn`.
+```tsx
+        <ForgotPassword onPress={() => {}}>
+          <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
+        </ForgotPassword>
+```
+
+Com o estilo
+```ts
+export const ForgotPassword = styled.TouchableOpacity`
+  margin-top: 24px;
+`;
+
+export const ForgotPasswordText = styled.Text`
+  color: #f4ede8;
+  font-size: 16px;
+  font-family: 'RobotoSlab-Regular';
+`;
+```
+
+E também o link de "Criar uma conta" que como ficará com `position: absolute;`, terá que ficar fora do container.
+```tsx
+      <CreateAccountButton>
+        <Icon name="log-in" size={20} color="#ff9000" />
+        <CreateAccountButtonText>Criar uma conta</CreateAccountButtonText>
+      </CreateAccountButton>
+```
+Para seu estilo, importamos um pacote que ajuda a vermos a distância inferior do tracinho
+```bash
+yarn add react-native-iphone-x-helper
+```
+
+```ts
+export const CreateAccountButton = styled.TouchableOpacity`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #312e38;
+  border-top-width: 1px;
+  border-color: #232129;
+  padding: 16px 0 ${16 + getBottomSpace()}px;
+
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+
+export const CreateAccountButtonText = styled.Text`
+  color: #ff9000;
+  font-size: 18px;
+  font-family: 'RobotoSlab-Regular';
+  margin-left: 16px;
+`;
+```
+
+Agora, quando clicamos no input e o teclado sobe, precisamos arrumar a posição para o input ficar visível
+```tsx
+import {
+  Image,
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+
+const SignIn: React.FC = () => {
+  return (
+    <>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={{ flex: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Container>
+```
+Onde o `KeyboardAvoidingView` vai empurrar o conteúdo para cima, o `ScrollView` vai permitir o scroll da tela e também vai fazer o teclado fechar quando tocar na tela fora do input.
+
