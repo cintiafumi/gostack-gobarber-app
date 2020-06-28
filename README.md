@@ -901,3 +901,103 @@ export const Container = styled.View<ContainerProps>`
     `}
 `;
 ```
+
+## Validação dos formulários
+Adicionamos o yup
+```bash
+yarn add yup
+yarn add -D @types/yup
+```
+
+Vamos copiar do projeto web a pasta `utils/getValidationError.ts` e toda a função `handleSubmit` de `pages/SignIn` do projeto web. E fazemos algumas modificações
+```tsx
+  const handleSignIn = useCallback(async (data: SignInFormData) => {
+    try {
+      formRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('E-mail obrigatório')
+          .email('Digite um e-mail válido'),
+        password: Yup.string().required('Senha obrigatória'),
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+
+      // await signIn({
+      //   email: data.email,
+      //   password: data.password,
+      // });
+
+      // history.push('/dashboard');
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+        formRef.current?.setErrors(errors);
+
+        return;
+      }
+
+      Alert.alert(
+        'Erro de autenticação',
+        'Ocorreu um erro ao fazer login. Verifique as credenciais.',
+      );
+    }
+  }, []);
+  ```
+No Input também precisamos receber agora o erro
+```tsx
+    <Container isFocused={isFocused} hasError={!!error}>
+```
+E no seu estilo, adicionamos a borda vermelha antes da borda do focus
+```ts
+interface ContainerProps {
+  isFocused: boolean;
+  hasError: boolean;
+}
+//...
+  ${(props) =>
+    props.hasError &&
+    css`
+      border-color: #c53030;
+    `}
+```
+
+Agora copiamos do SignUp do projeto web
+```tsx
+  const handleSignUp = useCallback(async (data: SignUpFormData) => {
+    try {
+      formRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+        name: Yup.string().required('Nome obrigatório'),
+        email: Yup.string()
+          .required('E-mail obrigatório')
+          .email('Digite um e-mail válido'),
+        password: Yup.string().min(6, 'No mínimo 6 caracteres'),
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+
+      // await api.post('/users', data);
+
+      // history.push('/');
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+        formRef.current?.setErrors(errors);
+
+        return;
+      }
+
+      Alert.alert(
+        'Erro no cadastro',
+        'Ocorreu um erro ao fazer cadastro. Tente novamente.',
+      );
+    }
+  }, []);
+  ```
