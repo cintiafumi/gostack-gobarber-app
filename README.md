@@ -798,3 +798,58 @@ import { FormHandles } from '@unform/core';
               </Button>
             </Form>
 ```
+
+## Usabilidade em formulários
+Desabilitar a correção automática nos inputs em SignIn
+```tsx
+//...
+  const passwordInputRef = useRef<TextInput>(null);
+//...
+              <Input
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                name="email"
+                icon="mail"
+                placeholder="E-mail"
+                returnKeyType="next"
+              />
+
+              <Input
+                ref={passwordInputRef}
+                name="password"
+                icon="lock"
+                placeholder="Senha"
+                secureTextEntry
+                returnKeyType="send"
+                onSubmitEditing={() => {
+                  formRef.current?.submitForm();
+                }}
+              />
+```
+
+Mas para conseguirmos passar o ref para o Input, temos que fazer essa alteração no Input. O componente não será mais `React.FC` mas sim `React.RefForwardingComponent`. O hook `useImperativeHandle` serve para passar do componente filho para componente pai, onde o primeiro parâmetro é o `ref` e o segundo é uma função que vai retornar o que quero para o componente pai. E temos que englobar o no `export default` com `forwardRef`
+```tsx
+import React, {
+  useRef,
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
+
+interface InputRef {
+  focus(): void;
+}
+
+const Input: React.RefForwardingComponent<InputRef, InputProps> = (
+  { name, icon, ...rest },
+  ref,
+) => {
+  useImperativeHandle(ref, () => ({
+    focus() {
+      inputElementRef.current.focus();
+    },
+  }));
+//...
+export default forwardRef(Input);
+```
