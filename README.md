@@ -1001,3 +1001,36 @@ Agora copiamos do SignUp do projeto web
     }
   }, []);
   ```
+
+# Conectando com a API
+## Cadastro na aplicação
+Adicionamos o axios
+```bash
+yarn add axios
+```
+Deixamos o backend e o docker da aplicação rodando.
+
+Adicionamos o `services/api.ts` como sempre
+```ts
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:3333',
+});
+
+export default api;
+```
+
+E em SignUp vamos adicionar então
+```tsx
+import api from '../../services/api';
+
+      await api.post('/users', data);
+
+      Alert.alert(
+        'Cadastro realizado com sucesso!',
+        'Você já pode fazer login na aplicação.',
+      );
+
+      navigation.goBack();
+```
