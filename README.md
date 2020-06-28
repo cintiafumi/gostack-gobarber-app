@@ -853,3 +853,51 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
 //...
 export default forwardRef(Input);
 ```
+
+## Foco e preenchimento
+Adicionar em Input
+```tsx
+  const [isFocused, setIsFocused] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
+
+  const handleInputFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    setIsFocused(false);
+
+    setIsFilled(!!inputValueRef.current.value);
+  }, []);
+//..
+      <Icon
+        //...
+        color={isFocused || isFilled ? '#ff9000' : '#666360'}
+      />
+
+      <TextInput
+        //...
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
+        //...
+      />
+```
+
+Adicionar nos style do Input
+```ts
+interface ContainerProps {
+  isFocused: boolean;
+}
+
+export const Container = styled.View<ContainerProps>`
+
+  border-width: 2px;
+  border-color: #232129;
+
+  ${(props) =>
+    props.isFocused &&
+    css`
+      border-color: #ff9000;
+    `}
+`;
+```
