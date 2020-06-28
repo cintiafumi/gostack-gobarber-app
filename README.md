@@ -1034,3 +1034,148 @@ import api from '../../services/api';
 
       navigation.goBack();
 ```
+
+## Auttenticação de usuário
+Vamos copiar `src/hooks/auth.tsx` da aplicação web. O que muda agora é ao invés de localStorage, usaremos `@react-native-community/async-storage`, que é um banco assíncrono
+```bash
+yarn add @react-native-community/async-storage
+
+cd ios && pod install && cd ..
+```
+
+Em `src/hooks/auth.tsx`, como `AsyncStorage` é assíncrono, não conseguimos pegar as informações que já estavam armazenadas dentro do nosso storage como no web.
+```tsx
+import React, {
+  createContext,
+  useCallback,
+  useState,
+  useContext,
+  useEffect,
+} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import api from '../services/api';
+
+interface AuthState {
+  token: string;
+  user: object;
+}
+
+interface SignInCredentials {
+  email: string;
+  password: string;
+}
+
+interface AuthContextData {
+  user: object;
+  signIn(credentials: SignInCredentials): Promise<void>;
+  signOut(): void;
+}
+
+const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+
+const AuthProvider: React.FC = ({ children }) => {
+  const [data, setData] = useState<AuthState>({} as AuthState);
+
+  useEffect(() => {
+    async function loadStorageData(): Promise<void> {
+      const [token, user] = await AsyncStorage.multiGet([
+        '@GoBarber:token',
+        '@GoBarber:user',
+      ]);
+
+      if (token[1] && user[1]) {
+        setData({ token: token[1], user: JSON.parse(user[1]) });
+      }
+    }
+
+    loadStorageData();
+  }, []);
+
+  const signIn = useCallback(async ({ email, password }) => {
+    const response = await api.post('sessions', {
+      email,
+      password,
+    });
+
+    const { token, user } = response.data;
+
+    await AsyncStorage.multiSet([
+      ['@GoBarber:token', token],
+      ['@GoBarber:user', JSON.stringify(user)],
+    ]);
+
+    setData({ token, user });
+  }, []);
+
+  const signOut = useCallback(async () => {
+    await AsyncStorage.multiRemove(['@GoBarber:token', '@GoBarber:user']);
+
+    setData({} as AuthState);
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+function useAuth(): AuthContextData {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+
+  return context;
+}
+
+export { AuthProvider, useAuth };
+```
+
+E também precisaremos do hook `src/hooks/index.tsx`
+```tsx
+import React from 'react';
+
+import { AuthProvider } from './auth';
+
+const AppProvider: React.FC = ({ children }) => {
+  return <AuthProvider>{children}</AuthProvider>;
+};
+
+export default AppProvider;
+```
+
+E importamos no App para colocar em volta da nossa aplicação
+```tsx
+import AppProvider from './hooks';
+
+const App: React.FC = () => (
+  <NavigationContainer>
+    <StatusBar barStyle="light-content" backgroundColor="#312e38" />
+    <AppProvider>
+      <View style={{ flex: 1, backgroundColor: '#312e38' }}>
+        <Routes />
+      </View>
+    </AppProvider>
+  </NavigationContainer>
+);
+```
+
+Então, em SignIn, importamos nosso hook useAuth
+```tsx
+import { useAuth } from '../../hooks/auth';
+//..
+  const { signIn } = useAuth();
+  //...
+      await signIn({
+        email: data.email,
+        password: data.password,
+      });
+```
+
+E uma forma de ver se o singIn está funcionando é dar um `console.log` do user que vem de `useAuth`
+```tsx
+  const { signIn, user } = useAuth();
+  console.log(user);
+```
