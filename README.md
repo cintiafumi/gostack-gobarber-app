@@ -682,3 +682,119 @@ E em SignIn
       <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
 ```
 
+## Integrando Unform
+Instalação
+```bash
+yarn add @unform/core @unform/mobile
+```
+
+Colocar o `Form` em volta dos inputs e button de SignIn, lembrando que precisamos colocar a referência do form no click do button
+```tsx
+import { Form } from '@unform/mobile';
+import { FormHandles } from '@unform/core';
+
+const SignIn: React.FC = () => {
+  const formRef = useRef<FormHandles>(null);
+  const handleSignIn = useCallback((data: object) => {
+    console.log(data);
+  }, []);
+//...
+            <Form ref={formRef} onSubmit={handleSignIn}>
+              <Input name="email" icon="mail" placeholder="E-mail" />
+
+              <Input name="password" icon="lock" placeholder="Senha" />
+
+              <Button
+                onPress={() => {
+                  formRef.current?.submitForm();
+                }}
+              >
+                Entrar
+              </Button>
+            </Form>
+```
+
+E no Input também vamos alterar para então receber o valor digitado, que é diferente que na web
+```tsx
+import React, { useRef, useEffect } from 'react';
+import { TextInputProps } from 'react-native';
+import { useField } from '@unform/core';
+
+import { Container, TextInput, Icon } from './styles';
+
+interface InputProps extends TextInputProps {
+  name: string;
+  icon: string;
+}
+
+interface InputValueReference {
+  value: string;
+}
+
+const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => {
+  const inputElementRef = useRef<any>(null);
+
+  const { registerField, defaultValue = '', fieldName, error } = useField(name);
+  const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
+
+  useEffect(() => {
+    registerField<string>({
+      name: fieldName,
+      ref: inputValueRef.current,
+      path: 'value',
+      setValue(ref: any, value) {
+        inputValueRef.current.value = value;
+        inputElementRef.current.setNativeProps({ text: value });
+      },
+      clearValue() {
+        inputValueRef.current.value = '';
+        inputElementRef.current.clear();
+      },
+    });
+  }, [fieldName, registerField]);
+
+  return (
+    <Container>
+      <Icon name={icon} size={20} color="#666360" />
+
+      <TextInput
+        keyboardAppearance="dark"
+        placeholderTextColor="#666360"
+        defaultValue={defaultValue}
+        onChangeText={(value) => {
+          inputValueRef.current.value = value;
+        }}
+        {...rest}
+      />
+    </Container>
+  );
+};
+
+export default Input;
+```
+
+E no `Form`, adicionamos
+```tsx
+import { Form } from '@unform/mobile';
+import { FormHandles } from '@unform/core';
+//...
+  const formRef = useRef<FormHandles>(null);
+
+  const handleSignIn = useCallback((data: object) => {
+    console.log(data);
+  }, []);
+//...
+            <Form ref={formRef} onSubmit={handleSignIn}>
+              <Input name="email" icon="mail" placeholder="E-mail" />
+
+              <Input name="password" icon="lock" placeholder="Senha" />
+
+              <Button
+                onPress={() => {
+                  formRef.current?.submitForm();
+                }}
+              >
+                Entrar
+              </Button>
+            </Form>
+```
