@@ -1179,3 +1179,81 @@ E uma forma de ver se o singIn está funcionando é dar um `console.log` do user
   const { signIn, user } = useAuth();
   console.log(user);
 ```
+
+## Rotas privadas
+Vamos mudar o nome do arquivo `src/routes/index.tsx` para `src/routes/auth.routes.tsx` e criamos um novo `src/routes/index.tsx`
+```tsx
+import React from 'react';
+import AuthRoutes from './auth.routes';
+
+const Routes: React.FC = () => {
+  return <AuthRoutes />;
+};
+
+export default Routes;
+```
+
+Vamos criar um `src/pages/Dashboard/index.tsx`
+```tsx
+
+```
+
+E também criaremos um `src/routes/app.routes.tsx` para quando o user estiver autenticado, jogar para Dashboard
+```tsx
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+
+import Dashboard from '../pages/Dashboard';
+
+const App = createStackNavigator();
+
+const AppRoutes: React.FC = () => (
+  <App.Navigator
+    screenOptions={{
+      // headerShown: false,
+      cardStyle: { backgroundColor: '#312e38' },
+    }}
+  >
+    <App.Screen name="Dashboard" component={Dashboard} />
+  </App.Navigator>
+);
+
+export default AppRoutes;
+```
+
+Quando damos reload, vemos rapidamente a tela de login aparecer pois o AsyncStorage demora um tempinho para carregar. Para contornar isso, vamos no `hooks` de `auth` para colocar um `state` de `loading`
+```tsx
+interface AuthContextData {
+  user: object;
+  loading: boolean;
+  signIn(credentials: SignInCredentials): Promise<void>;
+  signOut(): void;
+}
+//...
+  const [loading, setLoading] = useState(true);
+//...
+  useEffect(() => {
+      //...
+      setLoading(false);
+    }
+    loadStorageData();
+  }, []);
+  //...
+    <AuthContext.Provider value={{ user: data.user, loading, signIn, signOut }}>
+```
+
+Nas rotas, vamos verificar se o user está logado ou não, e enquanto estiver com loading, vamos manter `ActivityIndicator`
+```tsx
+const Routes: React.FC = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#999" />
+      </View>
+    );
+  }
+  return user ? <AppRoutes /> : <AuthRoutes />;
+};
+```
