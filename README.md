@@ -1195,7 +1195,22 @@ export default Routes;
 
 Vamos criar um `src/pages/Dashboard/index.tsx`
 ```tsx
+import React from 'react';
+import { View, Button } from 'react-native';
 
+import { useAuth } from '../../hooks/auth';
+
+const Dashboard: React.FC = () => {
+  const { signOut } = useAuth();
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center' }}>
+      <Button title="Sair" onPress={signOut} />
+    </View>
+  );
+};
+
+export default Dashboard;
 ```
 
 E também criaremos um `src/routes/app.routes.tsx` para quando o user estiver autenticado, jogar para Dashboard
