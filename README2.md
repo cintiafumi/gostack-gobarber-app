@@ -30,3 +30,86 @@ const AppRoutes: React.FC = () => (
   </App.Navigator>
 );
 ```
+
+## Header do Dashboard
+```tsx
+import React, { useCallback } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+import { useAuth } from '../../hooks/auth';
+
+import {
+  Container,
+  Header,
+  HeaderTitle,
+  UserName,
+  ProfileButton,
+  UserAvatar,
+} from './styles';
+
+const Dashboard: React.FC = () => {
+  const { signOut, user } = useAuth();
+  const { navigate } = useNavigation();
+
+  const navigateToProfile = useCallback(() => {
+    navigate('Profile');
+  }, [navigate]);
+
+  return (
+    <Container>
+      <Header>
+        <HeaderTitle>
+          Bem vindo,
+          {'\n'}
+          <UserName>{user.name}</UserName>
+        </HeaderTitle>
+
+        <ProfileButton onPress={navigateToProfile}>
+          <UserAvatar source={{ uri: user.avatar_url }} />
+        </ProfileButton>
+      </Header>
+    </Container>
+  );
+};
+
+export default Dashboard;
+```
+
+```ts
+import styled from 'styled-components/native';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+
+export const Container = styled.View`
+  flex: 1;
+`;
+
+export const Header = styled.View`
+  padding: 24px;
+  padding-top: ${getStatusBarHeight() + 24}px;
+  background: #28262e;
+
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const HeaderTitle = styled.Text`
+  color: #f4ede8;
+  font-size: 20px;
+  font-family: 'RobotoSlab-Regular';
+  line-height: 28px;
+`;
+
+export const UserName = styled.Text`
+  color: #ff9000;
+  font-family: 'RobotoSlab-Medium';
+`;
+
+export const ProfileButton = styled.TouchableOpacity``;
+
+export const UserAvatar = styled.Image`
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+`;
+```
