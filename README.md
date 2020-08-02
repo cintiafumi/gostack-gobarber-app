@@ -1272,3 +1272,7 @@ const Routes: React.FC = () => {
   return user ? <AppRoutes /> : <AuthRoutes />;
 };
 ```
+
+---
+
+Continuar em [Finalizando App](README2.md)
