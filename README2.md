@@ -113,3 +113,57 @@ export const UserAvatar = styled.Image`
   border-radius: 28px;
 `;
 ```
+
+## Buscando providers da api
+Temos que adicionar a interface `User` no nosso arquivo `auth` e o `authorization` no header das requisições
+```ts
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string;
+}
+//...
+  useEffect(() => {
+    async function loadStorageData(): Promise<void> {
+      //...
+      if (token[1] && user[1]) {
+        api.defaults.headers.authorization = `Bearer ${token[1]}`;
+
+        setData({ token: token[1], user: JSON.parse(user[1]) });
+      }
+      //...
+
+  const signIn = useCallback(async ({ email, password }) => {
+    //...
+    api.defaults.headers.authorization = `Bearer ${token}`;
+```
+
+Adicionamos a interface `Provider` para então tipar o que trazermos da api, e fizemos o componente `ProviderList`
+```tsx
+export interface Provider {
+  id: string;
+  name: string;
+  avatar_url: string;
+}
+
+const Dashboard: React.FC = () => {
+  const [providers, setProviders] = useState<Provider[]>([]);
+  //...
+  useEffect(() => {
+    api.get('/providers').then((response) => {
+      setProviders(response.data);
+    });
+  }, []);
+  //...
+      <ProvidersList
+        data={providers}
+        keyExtractor={(provider) => provider.id}
+        renderItem={({ item }) => <UserName>{item.name}</UserName>}
+      />
+```
+
+Nos styles, o `ProvidersList` virá de um `FlatList`
+```ts
+export const ProvidersList = styled(FlatList as new () => FlatList<Provider>)``;
+```
