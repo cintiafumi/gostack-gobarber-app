@@ -259,3 +259,90 @@ export const ProviderMetaText = styled.Text`
   font-family: 'RobotoSlab-Regular';
 `;
 ```
+
+# Agendamento
+## Estrutura da criação
+Vamos criar a página `CreateAppointment`
+```tsx
+import React, { useCallback } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Feather';
+
+import { useAuth } from '../../hooks/auth';
+
+import {
+  Container,
+  Header,
+  BackButton,
+  HeaderTitle,
+  UserAvatar,
+} from './styles';
+
+interface RouteParams {
+  providerId: string;
+}
+
+const CreateAppointment: React.FC = () => {
+  const { user } = useAuth();
+  const route = useRoute();
+  const { goBack } = useNavigation();
+
+  const { providerId } = route.params as RouteParams;
+
+  const navigateBack = useCallback(() => {
+    goBack();
+  }, [goBack]);
+
+  return (
+    <Container>
+      <Header>
+        <BackButton onPress={navigateBack}>
+          <Icon name="chevron-left" size={24} color="#999591" />
+        </BackButton>
+
+        <HeaderTitle>Cabeleireiros</HeaderTitle>
+
+        <UserAvatar source={{ uri: user.avatar_url }} />
+      </Header>
+    </Container>
+  );
+};
+
+export default CreateAppointment;
+```
+
+Seu estilo
+```ts
+import styled from 'styled-components/native';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+
+export const Container = styled.View`
+  flex: 1;
+`;
+
+export const Header = styled.View`
+  padding: 24px;
+  padding-top: ${getStatusBarHeight() + 24}px;
+  background: #28262e;
+
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const BackButton = styled.TouchableOpacity``;
+
+export const HeaderTitle = styled.Text`
+  color: #f4ede8;
+  font-family: 'RobotoSlab-Medium';
+  font-size: 20px;
+  margin-left: 16px;
+`;
+
+export const UserAvatar = styled.Image`
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  margin-left: auto;
+`;
+```
