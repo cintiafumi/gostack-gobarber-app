@@ -22,6 +22,7 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import logoImg from '../../assets/logo.png';
+import Logo from '../../assets/logo.svg';
 
 import {
   Container,
@@ -92,7 +93,8 @@ const SignIn: React.FC = () => {
           keyboardShouldPersistTaps="handled"
         >
           <Container>
-            <Image source={logoImg} />
+            {/* <Image source={logoImg} /> */}
+            <Logo fill="rgb(1, 1, 1)" />
 
             <View>
               <Title>Faça seu logon</Title>
