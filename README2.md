@@ -346,3 +346,96 @@ export const UserAvatar = styled.Image`
   margin-left: auto;
 `;
 ```
+
+## Alternando entre providers
+Algumas coisa são iguais ao que já fizemos no `Dashboard`
+```tsx
+export interface Provider {
+  id: string;
+  name: string;
+  avatar_url: string;
+}
+//...
+const CreateAppointment: React.FC = () => {
+  //...
+  const routeParams = route.params as RouteParams;
+
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState(
+    routeParams.providerId,
+  );
+
+  useEffect(() => {
+    api.get('/providers').then((response) => {
+      setProviders(response.data);
+    });
+  }, []);
+  //...
+  const handleSelectProvider = useCallback((providerId: string) => {
+    setSelectedProvider(providerId);
+  }, []);
+
+  return (
+    //...
+      <ProvidersListContainer>
+        <ProvidersList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={providers}
+          keyExtractor={(provider) => provider.id}
+          renderItem={({ item: provider }) => (
+            <ProviderContainer
+              onPress={() => handleSelectProvider(provider.id)}
+              selected={provider.id === selectedProvider}
+            >
+              <ProviderAvatar source={{ uri: provider.avatar_url }} />
+              <ProviderName selected={provider.id === selectedProvider}>
+                {provider.name}
+              </ProviderName>
+            </ProviderContainer>
+          )}
+        />
+      </ProvidersListContainer>
+```
+
+E nos estilos
+```ts
+interface ProviderContainerProps {
+  selected: boolean;
+}
+
+interface ProviderNameProps {
+  selected: boolean;
+}
+//...
+export const ProvidersListContainer = styled.View`
+  height: 112px;
+`;
+
+export const ProvidersList = styled(FlatList as new () => FlatList<Provider>)`
+  padding: 32px 24px;
+`;
+
+export const ProviderContainer = styled(RectButton)<ProviderContainerProps>`
+  background: ${(props) => (props.selected ? '#ff9000' : '#3e3b47')};
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 12px;
+  margin-right: 16px;
+
+  border-radius: 10px;
+`;
+
+export const ProviderAvatar = styled.Image`
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+`;
+
+export const ProviderName = styled.Text<ProviderNameProps>`
+  margin-left: 8px;
+  font-family: 'RobotoSlab-Medium';
+  font-size: 16px;
+  color: ${(props) => (props.selected ? '#232129' : '#f4ede8')};
+`;
+```
