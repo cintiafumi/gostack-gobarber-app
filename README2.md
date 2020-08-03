@@ -439,3 +439,83 @@ export const ProviderName = styled.Text<ProviderNameProps>`
   color: ${(props) => (props.selected ? '#232129' : '#f4ede8')};
 `;
 ```
+
+## Criando Picker de data
+Vamos adicionar a lib
+```sh
+yarn add @react-native-community/datetimepicker
+```
+
+E vamos usar na nossa tela de `CreateAppointment`
+```tsx
+const CreateAppointment: React.FC = () => {
+  //...
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  //...
+  const handleToggleDatePicker = useCallback(() => {
+    setShowDatePicker((state) => !state);
+  }, []);
+
+  const handleDateChange = useCallback((event: any, date: Date | undefined) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+
+    if (date) {
+      setSelectedDate(date);
+    }
+  }, []);
+
+  return (
+    <Container>
+
+
+      <Calendar>
+        <Title>Escolha a data</Title>
+
+        <OpenDatePicker onPress={handleToggleDatePicker}>
+          <OpenDatePickerText>Selecionar outra data</OpenDatePickerText>
+        </OpenDatePicker>
+
+        {showDatePicker && (
+          <DateTimePicker
+            mode="date"
+            display="calendar"
+            onChange={handleDateChange}
+            textColor="#f4ede8"
+            value={selectedDate}
+          />
+        )}
+      </Calendar>
+    </Container>
+  );
+};
+```
+
+E seu estilo
+```ts
+export const Calendar = styled.View``;
+
+export const Title = styled.Text`
+  font-family: 'RobotoSlab-Medium';
+  color: #f4ede8;
+  font-size: 24px;
+  margin: 0 24px 24px;
+`;
+
+export const OpenDatePicker = styled(RectButton)`
+  height: 46px;
+  background: #ff9000;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 24px;
+`;
+
+export const OpenDatePickerText = styled.Text`
+  font-family: 'RobotoSlab-Medium';
+  font-size: 16px;
+  color: #232129;
+`;
+```
