@@ -551,3 +551,23 @@ const CreateAppointment: React.FC = () => {
       });
   }, [selectedDate, selectedProvider]);
 ```
+
+## Debugando app com Flipper
+Baixamos o Flipper e ao abrir, ele avisa se precisamos baixar algo que esteja faltando.
+
+Se tiver com o app rodando, já vai automaticamente entender e vai mostrar o nome do app na sidebar.
+
+Já temos o React DevTools nele e conseguimos rastrear todos os componentes.
+
+Como temos muitos `context`, podemos ir no ícone de engrenagem para então esconder o `type` equals `context`.
+
+Outra coisa que podemos fazer, já que estamos usando o styled-components, é nos styles nomear o componente somente em momentos de debug que queremos achar esse componente. Exemplo:
+```ts
+Header.displayName = 'DashboardHeader'
+```
+
+Outra funcionalidade é a Network que dá para ver todas as requisições que fizemos e as respostas.
+
+Também podemos instalar plugins.
+
+O Layout é mais para verificar dos componentes nativos, mas não se usa muito.
