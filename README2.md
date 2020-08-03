@@ -446,6 +446,11 @@ Vamos adicionar a lib
 yarn add @react-native-community/datetimepicker
 ```
 
+Adicionamos o `translucent` na `Statusbar` dentro de `App.tsx` pois estava com um espaço muito gigante para Android.
+```tsx
+    <StatusBar barStyle="light-content" backgroundColor="#312e38" translucent />
+```
+
 E vamos usar na nossa tela de `CreateAppointment`
 ```tsx
 const CreateAppointment: React.FC = () => {
