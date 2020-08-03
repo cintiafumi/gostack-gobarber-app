@@ -524,3 +524,30 @@ export const OpenDatePickerText = styled.Text`
   color: #232129;
 `;
 ```
+
+## Buscando disponibilidade da API
+Toda vez que o `selectedDate` ou o `selectedProvider` mudar, vou disparar um `useEffect`
+```tsx
+interface AvailabilityItem {
+  hour: number;
+  available: boolean;
+}
+
+const CreateAppointment: React.FC = () => {
+  //...
+  const [availability, setAvailability] = useState<AvailabilityItem[]>([]);
+  //...
+  useEffect(() => {
+    api
+      .get(`providers/${selectedProvider}/day-availability`, {
+        params: {
+          year: selectedDate.getFullYear(),
+          month: selectedDate.getMonth() + 1,
+          day: selectedDate.getDate(),
+        },
+      })
+      .then((response) => {
+        setAvailability(response.data);
+      });
+  }, [selectedDate, selectedProvider]);
+```
