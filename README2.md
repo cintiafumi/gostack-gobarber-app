@@ -866,3 +866,34 @@ export const OkButtonText = styled.Text`
   font-size: 18px;
 `;
 ```
+
+## Formatando a data
+Lembrando que estamos passando a data por timestamp pela rota. Capturamos a data e formatamos. Temos que desligar a opção de imports duplicados, como já fizemos no web.
+```json
+    "import/no-duplicates": "off",
+```
+
+```tsx
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
+
+interface RouteParams {
+  date: number;
+}
+
+const AppointmentCreated: React.FC = () => {
+  const { params } = useRoute();
+
+  const routeParams = params as RouteParams;
+
+  const formattedDate = useMemo(() => {
+    return format(
+      routeParams.date,
+      "EEEE', dia 'dd 'de' MMMM 'de' yyyy 'às' HH:mm'h'",
+      { locale: ptBR },
+    );
+  }, [routeParams.date]);
+
+  //...
+        <Description>{formattedDate}</Description>
+```
