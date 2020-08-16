@@ -617,3 +617,116 @@ E deixamos na renderização sem estilo, por enquanto
         <Title key={formattedHour}>{formattedHour}</Title>
       ))}
 ```
+
+## Mostrando horários em tela
+Criamos os styles dos horários exibidos em tela
+```ts
+interface HourProps {
+  available: boolean;
+  selected: boolean;
+}
+
+interface HourTextProps {
+  selected: boolean;
+}
+//...
+export const Content = styled.ScrollView``;
+//...
+export const Schedule = styled.View`
+  padding: 24px 0 16px;
+`;
+
+export const Section = styled.View`
+  margin-bottom: 24px;
+`;
+
+export const SectionTitle = styled.Text`
+  font-size: 18px;
+  color: #999591;
+  font-family: 'RobotoSlab-Regular';
+  margin: 0 24px 12px;
+`;
+
+export const SectionContent = styled.ScrollView.attrs({
+  contentContainerStyle: { paddingHorizontal: 24 },
+  horizontal: true,
+  showsHorizontalScrollIndicator: false,
+})``;
+
+export const Hour = styled(RectButton)<HourProps>`
+  padding: 12px;
+  background: ${(props) => (props.selected ? '#ff9000' : '#3e3b47')};
+  border-radius: 10px;
+  margin-right: 8px;
+
+  opacity: ${(props) => (props.available ? 1 : 0.3)};
+`;
+
+export const HourText = styled.Text<HourTextProps>`
+  color: ${(props) => (props.selected ? '#232129' : '#f4ede8')};
+  font-family: 'RobotoSlab-Regular';
+  font-size: 16px;
+`;
+```
+
+E os componentes
+```tsx
+const CreateAppointment: React.FC = () => {
+  //...
+  const [selectedHour, setSelectedHour] = useState(0);
+  //...
+  const handleSelectHour = useCallback((hour: number) => {
+    setSelectedHour(hour);
+  }, []);
+  //...
+  return (
+    //...
+      <Content>
+        //...
+        <Schedule>
+          <Title>Escolha o horário</Title>
+
+          <Section>
+            <SectionTitle>Manhã</SectionTitle>
+
+            <SectionContent>
+              {morningAvailability.map(({ formattedHour, hour, available }) => (
+                <Hour
+                  enabled={available}
+                  selected={selectedHour === hour}
+                  available={available}
+                  key={formattedHour}
+                  onPress={() => handleSelectHour(hour)}
+                >
+                  <HourText selected={selectedHour === hour}>
+                    {formattedHour}
+                  </HourText>
+                </Hour>
+              ))}
+            </SectionContent>
+          </Section>
+
+          <Section>
+            <SectionTitle>Tarde</SectionTitle>
+
+            <SectionContent>
+              {afternoonAvailability.map(
+                ({ formattedHour, hour, available }) => (
+                  <Hour
+                    enabled={available}
+                    selected={selectedHour === hour}
+                    available={available}
+                    key={formattedHour}
+                    onPress={() => handleSelectHour(hour)}
+                  >
+                    <HourText selected={selectedHour === hour}>
+                      {formattedHour}
+                    </HourText>
+                  </Hour>
+                ),
+              )}
+            </SectionContent>
+          </Section>
+        </Schedule>
+      </Content>
+```
