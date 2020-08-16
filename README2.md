@@ -1239,3 +1239,51 @@ const Profile: React.FC = () => {
     [navigation, updateUser],
   );
 ```
+
+## Atualização do avatar
+Adicionamos o pacote `react-native-image-picker`
+```sh
+yarn add react-native-image-picker
+```
+
+```tsx
+  const handleUpdateAvatar = useCallback(() => {
+    ImagePicker.showImagePicker(
+      {
+        title: 'Selecione um avatar',
+        cancelButtonTitle: 'Cancelar',
+        takePhotoButtonTitle: 'Usar câmera',
+        chooseFromLibraryButtonTitle: 'Escolha da galeria',
+      },
+      (response) => {
+        if (response.didCancel) {
+          return;
+        }
+
+        if (response.error) {
+          Alert.alert('Erro ao atualizar seu avatar.');
+          return;
+        }
+        const data = new FormData();
+
+        data.append('avatar', {
+          type: 'image/jpeg',
+          name: `${user.id}.jpg`,
+          uri: response.uri,
+        });
+
+        api.patch('users/avatar', data).then((apiResponse) => {
+          updateUser(apiResponse.data);
+        });
+      },
+    );
+  }, [user.id, updateUser]);
+  //...
+            <UserAvatarButton onPress={handleUpdateAvatar}>
+```
+Como extra, podemos fazer um resize da imagem para que não demore muito para atualizar o avatar (react-native-image-editor).
+
+Lembrando de dar esse comando para rodar o android.
+```sh
+adb reverse tcp:3333 tcp:3333
+```
