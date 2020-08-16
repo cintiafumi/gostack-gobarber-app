@@ -778,3 +778,91 @@ export const CreateAppointmentButtonText = styled.Text`
   color: #232129;
 `;
 ```
+
+# Sucesso
+## Criando estrutura da tela
+
+O `reset` é para navegar e remover a possibilidade do usuário voltar na tela anterior (arrastando a tela para voltar pelo iOS, ou clicando no botão voltar do Android). O `reset` recebe alguns parâmetros: `routes` que seria o estado das rotas que eu quero resetar o usuário. Então, passamos um conjunto de rotas que é como se fosse por onde o usuário já passou. Nesse caso, só vamos resetar para a tela de `Dashboard` e sem nenhuma outra tela como histórico. O `index` é a posição desse array de `routes` que passamos também como parâmetro.
+
+```tsx
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import Icon from 'react-native-vector-icons/Feather';
+
+import {
+  Container,
+  Title,
+  Description,
+  OkButton,
+  OkButtonText,
+} from './styles';
+
+const AppointmentCreated: React.FC = () => {
+  const { reset } = useNavigation();
+
+  const handleOkPressed = useCallback(() => {
+    reset({
+      routes: [{ name: 'Dashboard' }],
+      index: 0,
+    });
+  }, [reset]);
+
+  return (
+    <Container>
+      <Icon name="check" size={80} color="#04d381" />
+
+      <Title>Agendamento concluído</Title>
+      <Description>Terça, dia 14 de março de 2020 às 12:00h</Description>
+
+      <OkButton onPress={handleOkPressed}>
+        <OkButtonText>Ok</OkButtonText>
+      </OkButton>
+    </Container>
+  );
+};
+
+export default AppointmentCreated;
+```
+
+Estilo
+```ts
+import { RectButton } from 'react-native-gesture-handler';
+import styled from 'styled-components/native';
+
+export const Container = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 0 24px;
+`;
+
+export const Title = styled.Text`
+  font-size: 32px;
+  color: #f4ede8;
+  font-family: 'RobotoSlab-Medium';
+  margin-top: 48px;
+  text-align: center;
+`;
+
+export const Description = styled.Text`
+  font-family: 'RobotoSlab-Regular';
+  font-size: 18px;
+  color: #999591;
+  margin-top: 16px;
+`;
+
+export const OkButton = styled(RectButton)`
+  background: #ff9000;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 24px;
+  padding: 12px 24px;
+`;
+
+export const OkButtonText = styled.Text`
+  font-family: 'RobotoSlab-Medium';
+  color: #312e38;
+  font-size: 18px;
+`;
+```
