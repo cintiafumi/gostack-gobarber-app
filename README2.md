@@ -571,3 +571,49 @@ Outra funcionalidade é a Network que dá para ver todas as requisições que fi
 Também podemos instalar plugins.
 
 O Layout é mais para verificar dos componentes nativos, mas não se usa muito.
+
+## Disponibilidade por período
+Para não fazemos a formatação dentro do render, e o componente vai renderizar toda vez que qualquer coisa no componente mudar. Então, se fizéssemos a formatação no render, isso ia acontecer toda vez. Então, todo processo de formatação antes deve acontecer antes da renderização. Por isso, usamos o `useMemo`
+
+Adicionamos o pacote `date-fns`
+```sh
+yarn add date-fns
+```
+
+Separamos os horários da manhã e da tarde em `CreateAppointment`
+```ts
+  const morningAvailability = useMemo(() => {
+    return availability
+      .filter(({ hour }) => hour < 12)
+      .map(({ hour, available }) => {
+        return {
+          hour,
+          available,
+          formattedHour: format(new Date().setHours(hour), 'HH:00'),
+        };
+      });
+  }, [availability]);
+
+  const afternoonAvailability = useMemo(() => {
+    return availability
+      .filter(({ hour }) => hour >= 12)
+      .map(({ hour, available }) => {
+        return {
+          hour,
+          available,
+          formattedHour: format(new Date().setHours(hour), 'HH:00'),
+        };
+      });
+  }, [availability]);
+```
+
+E deixamos na renderização sem estilo, por enquanto
+```tsx
+      {morningAvailability.map(({ formattedHour, available }) => (
+        <Title key={formattedHour}>{formattedHour}</Title>
+      ))}
+
+      {afternoonAvailability.map(({ formattedHour, available }) => (
+        <Title key={formattedHour}>{formattedHour}</Title>
+      ))}
+```
