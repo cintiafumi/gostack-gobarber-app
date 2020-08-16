@@ -1129,3 +1129,113 @@ Em `Dashboard` fazemos para o `Profile` quando clicamos na foto
     navigate('Profile');
   }, [navigate]);
 ```
+
+## Atualização dos dados
+Adicionamos o no nosso hook a parte de `updateUser`
+```tsx
+  const updateUser = useCallback(
+    async (user: User) => {
+      await AsyncStorage.setItem('@GoBarber:user', JSON.stringify(user));
+
+      setData({
+        token: data.token,
+        user,
+      });
+    },
+    [data.token],
+  );
+
+  return (
+    <AuthContext.Provider
+      value={{ user: data.user, loading, signIn, signOut, updateUser }}
+    >
+```
+
+E em `Profile`
+```tsx
+interface ProfileFormData {
+  name: string;
+  email: string;
+  old_password: string;
+  password: string;
+  password_confirmation: string;
+}
+
+const Profile: React.FC = () => {
+  const { user, updateUser } = useAuth();
+  //...
+  const handleSignUp = useCallback(
+    async (data: ProfileFormData) => {
+      try {
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          old_password: Yup.string(),
+          password: Yup.string().when('old_password', {
+            is: (val) => !!val.length,
+            then: Yup.string().required('Campo obrigatório'),
+            otherwise: Yup.string(),
+          }),
+          password_confirmation: Yup.string()
+            .when('old_password', {
+              is: (val) => !!val.length,
+              then: Yup.string().required('Campo obrigatório'),
+              otherwise: Yup.string(),
+            })
+            .oneOf(
+              [Yup.ref('password'), undefined],
+              'As senhas devem ser iguais',
+            ),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        const {
+          name,
+          email,
+          old_password,
+          password,
+          password_confirmation,
+        } = data;
+
+        const formData = {
+          name,
+          email,
+          ...(old_password
+            ? {
+                old_password,
+                password,
+                password_confirmation,
+              }
+            : {}),
+        };
+        const response = await api.put('/profile', formData);
+
+        updateUser(response.data);
+
+        Alert.alert('Perfil realizado com sucesso!');
+
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+
+        Alert.alert(
+          'Erro na atualização do perfil',
+          'Ocorreu um erro ao atualizar seu perfil. Tente novamente.',
+        );
+      }
+    },
+    [navigation, updateUser],
+  );
+```
