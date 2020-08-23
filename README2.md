@@ -1287,3 +1287,5 @@ Lembrando de dar esse comando para rodar o android.
 ```sh
 adb reverse tcp:3333 tcp:3333
 ```
+
+Continuar em [Testes no React Native](README3.md)
